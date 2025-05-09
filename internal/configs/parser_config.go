@@ -75,7 +75,7 @@ func (p *Parser) loadConfigFile(path string, override bool) (*File, hcl.Diagnost
 	for _, block := range content.Blocks {
 		switch block.Type {
 
-		case "terraform":
+		case "terraform", "opentofu":
 			content, contentDiags := block.Body.Content(terraformBlockSchema)
 			diags = append(diags, contentDiags...)
 
@@ -128,11 +128,11 @@ func (p *Parser) loadConfigFile(path string, override bool) (*File, hcl.Diagnost
 			}
 
 		case "required_providers":
-			// required_providers should be nested inside a "terraform" block
+			// required_providers should be nested inside a "terraform" or "opentofu" block
 			diags = append(diags, &hcl.Diagnostic{
 				Severity: hcl.DiagError,
 				Summary:  "Invalid required_providers block",
-				Detail:   "A \"required_providers\" block must be nested inside a \"terraform\" block.",
+				Detail:   "A \"required_providers\" block must be nested inside a \"terraform\" or \"opentofu\" block.",
 				Subject:  block.TypeRange.Ptr(),
 			})
 
@@ -223,7 +223,7 @@ func (p *Parser) loadConfigFile(path string, override bool) (*File, hcl.Diagnost
 }
 
 // sniffCoreVersionRequirements does minimal parsing of the given body for
-// "terraform" blocks with "required_version" attributes, returning the
+// "terraform" or "opentofu" blocks with "required_version" attributes, returning the
 // requirements found.
 //
 // This is intended to maximize the chance that we'll be able to read the
@@ -266,9 +266,12 @@ var configFileSchema = &hcl.BodySchema{
 			Type: "terraform",
 		},
 		{
+			Type: "opentofu",
+		},
+		{
 			// This one is not really valid, but we include it here so we
 			// can create a specialized error message hinting the user to
-			// nest it inside a "terraform" block.
+			// nest it inside a "terraform" or "opentofu" block.
 			Type: "required_providers",
 		},
 		{
@@ -314,7 +317,7 @@ var configFileSchema = &hcl.BodySchema{
 	},
 }
 
-// terraformBlockSchema is the schema for a top-level "terraform" block in
+// terraformBlockSchema is the schema for a top-level "terraform" or "opentofu" block in
 // a configuration file.
 var terraformBlockSchema = &hcl.BodySchema{
 	Attributes: []hcl.AttributeSchema{
@@ -350,6 +353,9 @@ var configFileTerraformBlockSniffRootSchema = &hcl.BodySchema{
 		{
 			Type: "terraform",
 		},
+		{
+			Type: "opentofu",
+		},
 	},
 }
 
@@ -363,7 +369,7 @@ var configFileVersionSniffBlockSchema = &hcl.BodySchema{
 }
 
 // configFileExperimentsSniffBlockSchema is a schema for sniffActiveExperiments,
-// to decode a single attribute from inside a "terraform" block.
+// to decode a single attribute from inside a "terraform" or "opentofu" block.
 var configFileExperimentsSniffBlockSchema = &hcl.BodySchema{
 	Attributes: []hcl.AttributeSchema{
 		{Name: "experiments"},

@@ -24,7 +24,7 @@ import (
 var disableExperimentWarnings = ""
 
 // sniffActiveExperiments does minimal parsing of the given body for
-// "terraform" blocks with "experiments" attributes, returning the
+// "terraform" or "opentofu" blocks with "experiments" attributes, returning the
 // experiments found.
 //
 // This is separate from other processing so that we can be sure that all of

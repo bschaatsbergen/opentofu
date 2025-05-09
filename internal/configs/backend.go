@@ -17,7 +17,7 @@ import (
 	"github.com/zclconf/go-cty/cty"
 )
 
-// Backend represents a "backend" block inside a "terraform" block in a module
+// Backend represents a "backend" block inside a "terraform" or "opentofu" block in a module
 // or file.
 type Backend struct {
 	Type   string

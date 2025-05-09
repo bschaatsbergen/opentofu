@@ -7,33 +7,37 @@ description: >-
 
 # OpenTofu Settings
 
-The special `terraform` configuration block type is used to configure some
+The special `opentofu` or `terraform` configuration block type is used to configure some
 behaviors of OpenTofu itself, such as requiring a minimum OpenTofu version to
 apply your configuration.
 
 :::note
 As a part of [OpenTofu v1.x Compatibility Promises](../../language/v1-compatibility-promises.mdx),
-the `terraform` block stays as-is. A `tofu` block may be introduced in the future, but it doesn't
-exist yet.
+the `terraform` block stays as-is. In addition, we introduced an `opentofu` block for a more native Tofu experience.
 :::
 
 
-## OpenTofu `terraform` Block Syntax
+## OpenTofu Settings Block Syntax
 
-OpenTofu settings are gathered together into `terraform` blocks:
+OpenTofu settings can be defined using either the `opentofu` or `terraform` block. 
+These blocks are functionally equivalent and can be used interchangeably; however, we recommend choosing one for consistency and clearer visual structure.
 
 ```hcl
+opentofu {
+  # ...
+}
+
 terraform {
   # ...
 }
 ```
 
-Each `terraform` block can contain a number of settings related to OpenTofu's
-behavior. Within a `terraform` block, only constant values can be used;
+Each `opentofu` or `terraform` block can contain a number of settings related to OpenTofu's
+behavior. Within a `opentofu` or `terraform` block, only constant values can be used;
 arguments may not refer to named objects such as resources, input variables,
 etc, and may not use any of the OpenTofu language built-in functions.
 
-The various options supported within a `terraform` block are described in the
+The various options supported within a `opentofu` or `terraform` block are described in the
 following sections.
 
 ## Configuring an OpenTofu Backend
@@ -72,7 +76,7 @@ current module, mapping each local provider name to a source address and a
 version constraint.
 
 ```hcl
-terraform {
+opentofu {
   required_providers {
     aws = {
       version = ">= 2.7.0"
@@ -95,7 +99,7 @@ a per-module basis by setting the `experiments` argument inside a `tofu`
 block:
 
 ```hcl
-terraform {
+opentofu {
   experiments = [example]
 }
 ```
@@ -122,7 +126,7 @@ if any, are available in a particular OpenTofu release.
 
 ## Passing Metadata to Providers
 
-The `terraform` block can have a nested `provider_meta` block for each
+The `opentofu` or `terraform` block can have a nested `provider_meta` block for each
 provider a module is using, if the provider defines a schema for it. This
 allows the provider to receive module-specific information, and is primarily
 intended for modules distributed by the same vendor as the associated provider.
